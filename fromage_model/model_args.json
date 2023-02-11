@@ -1,0 +1,22 @@
+{
+    "opt_version": "facebook/opt-6.7b",
+    "task": "multitask",
+    "freeze_lm": true,
+    "visual_encoder": "openai/clip-vit-large-patch14",
+    "freeze_vm": true,
+    "pretrained_visual": true,
+    "use_pooler": true,
+    "n_visual_tokens": 1,
+    "image_embed_dropout_prob": 0.0,
+    "text_embed_dropout_prob": 0.0,
+    "shared_emb_dim": 256,
+    "text_emb_layers": [
+        -1
+    ],
+    "append_retrieval_token": true,
+    "num_appended_retrieval_tokens": 1,
+    "input_prompt": "A picture of",
+    "add_input_to_ret": true,
+    "tunable_prompt_length": 0,
+    "retrieval_token_idx": 50266
+}
