@@ -166,8 +166,8 @@ class FromageModel(nn.Module):
   def forward(
     self,
     pixel_values: torch.FloatTensor,
-    labels: Optional[torch.LongTensor] = None,
-    caption_len: Optional[torch.LongTensor] = None,
+    labels: torch.LongTensor,
+    caption_len: torch.LongTensor,
     mode: str = 'captioning',
     concat_captions: bool = False,
     input_prefix: Optional[str] = None,
@@ -352,7 +352,12 @@ class FromageModel(nn.Module):
     """Runs greedy decoding and returns generated captions.
 
     Args:
+      embeddings: Input condition that the model uses for autoregressive generation.
+      max_len: Maximum number of tokens to generate.
+      temperature: Used to modulate logit distribution.
+      top_p: If set to < 1, the smallest set of tokens with highest probabilities that add up to top_p or higher are kept for generation.
       min_word_tokens: Minimum number of words to generate before allowing a [RET] output.
+      ret_scale_factor: Proportion to scale [RET] token logits by. A higher value may increase the probability of the model generating [RET] outputs.
       filter_value: Value to assign to tokens that should never be generated.
     Outputs:
       out: (N, T) int32 sequence of output tokens.
@@ -482,7 +487,13 @@ class Fromage(nn.Module):
 
     Args:
       prompts: List of interleaved PIL.Image.Image and strings representing input to the model.
+      num_words: Maximum number of words to generate for. If num_words = 0, the model will run its forward pass and return the outputs.
+      ret_scale_factor: Proportion to scale [RET] token logits by. A higher value may increase the probability of the model generating [RET] outputs.
+      top_p: If set to < 1, the smallest set of tokens with highest probabilities that add up to top_p or higher are kept for generation.
+      temperature: Used to modulate logit distribution.
+      max_num_rets: Maximum number of images to return in one generation pass.
     Returns:
+      return_outputs: List consisting of either str or List[PIL.Image.Image] objects, representing image-text interleaved model outputs.
     """
     input_embs = []
     input_ids = []
@@ -580,7 +591,7 @@ class Fromage(nn.Module):
         return_outputs.append(utils.truncate_caption(caption) + ' [RET]')
         return_outputs.append(image_outputs)
 
-    return return_outputs, input_embs, generated_ids
+    return return_outputs
 
 
 def load_fromage(model_dir: str) -> Fromage:
