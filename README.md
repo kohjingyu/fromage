@@ -4,7 +4,7 @@
 
 This repository hosts the code and model weights for FROMAGe.
 
-[Paper](https://arxiv.org/abs/2301.13823) | [Project Webpage](https://jykoh.com/fromage)
+[Paper](https://arxiv.org/abs/2301.13823) | [Project Webpage](https://jykoh.com/fromage) | <a href="https://huggingface.co/spaces/alvanlii/FROMAGe"><img src="https://img.shields.io/badge/%20HuggingFace%20-Demo-blue.svg" alt="HuggingFace Spaces"></a>
 
 
 ## Setup instructions
