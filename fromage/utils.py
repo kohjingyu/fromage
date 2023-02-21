@@ -35,7 +35,8 @@ def truncate_caption(caption: str) -> str:
   trunc_index = caption.find('\n') + 1
   if trunc_index <= 0:
       trunc_index = caption.find('.') + 1
-  caption = caption[:trunc_index]
+  if trunc_index > 0:
+    caption = caption[:trunc_index]
   return caption
 
 
