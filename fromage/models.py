@@ -313,22 +313,7 @@ class FromageModel(nn.Module):
         last_embedding = torch.stack([last_hidden_state[i, last_embedding_idx[i], :] for i in range(batch_size)], axis=0)  # (N, D)
         last_output_logit = torch.stack([output.logits[i, last_embedding_idx[i] - 1, :] for i in range(batch_size)], axis=0)  # (N, D)
       else:
-        # Concatenate two captioning examples together.
-        all_last_embedding = []
-        all_last_output_logit = []
-        for i in range(batch_size // 2):
-          first_last_embedding_idx, second_last_embedding_idx = all_last_embedding_idx[i]
-          first_last_embedding = last_hidden_state[i, first_last_embedding_idx, :]  # (N, D)
-          first_last_output_logit = output.logits[i, first_last_embedding_idx - 1, :]  # (N, D)
-          second_last_embedding = last_hidden_state[i, second_last_embedding_idx, :]  # (N, D)
-          second_last_output_logit = output.logits[i, second_last_embedding_idx - 1, :]  # (N, D)
-          all_last_embedding.append(first_last_embedding)
-          all_last_embedding.append(second_last_embedding)
-          all_last_output_logit.append(first_last_output_logit)
-          all_last_output_logit.append(second_last_output_logit)
-
-        last_embedding = torch.stack(all_last_embedding)
-        last_output_logit = torch.stack(all_last_output_logit)
+        raise NotImplementedError
 
       # Compute retrieval loss.
       assert visual_embs.shape[1] == 1, visual_embs.shape
