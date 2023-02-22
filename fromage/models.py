@@ -566,8 +566,7 @@ class Fromage(nn.Module):
             seen_image_idx.append(img_idx)
             img = utils.get_image_from_url(self.path_array[img_idx])
             image_outputs.append(img)
-            if len(image_outputs) == max_num_rets:
-              break
+            break
           except UnidentifiedImageError:
             pass
 

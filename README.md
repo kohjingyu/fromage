@@ -4,7 +4,7 @@
 
 This repository hosts the code and model weights for FROMAGe.
 
-[Paper](https://arxiv.org/abs/2301.13823) | [Project Webpage](https://jykoh.com/fromage)
+[Paper](https://arxiv.org/abs/2301.13823) | [Project Webpage](https://jykoh.com/fromage) | [Demo](https://huggingface.co/spaces/jykoh/fromage)
 
 
 ## Setup instructions
@@ -77,12 +77,19 @@ Note that because of exception catching (to ensure data errors don't terminate t
 
 
 
+## Gradio Demo
+
+You can launch your own version of the Gradio demo locally by running `python demo/app.py`, or duplicating the [HuggingFace space](https://huggingface.co/spaces/jykoh/fromage).
+
+Check out other unofficial HuggingFace spaces for FROMAGe:
+- [alvanlii FROMAGe demo](https://huggingface.co/spaces/alvanlii/FROMAGe)
+
 
 ## TODOs
 
-- [x] Add training code and instructions for training a new model on CC3M.
 - [ ] Implement [LLM.int8()](https://arxiv.org/abs/2208.07339) for inference with lower memory GPUs.
-- [ ] Add web demo.
+- [x] Add training code and instructions for training a new model on CC3M.
+- [x] Add [web demo](https://huggingface.co/spaces/jykoh/fromage).
 
 
 
