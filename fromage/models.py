@@ -466,7 +466,7 @@ class Fromage(nn.Module):
 
   def generate_for_images_and_texts(
     self, prompts: List, num_words: int = 0, ret_scale_factor: float = 1.0, top_p: float = 1.0, temperature: float = 0.0,
-    max_num_rets: int = 1):
+    max_num_rets: int = 1, max_img_per_ret: int = 1):
     """
     Encode prompts into embeddings.
 
@@ -477,6 +477,7 @@ class Fromage(nn.Module):
       top_p: If set to < 1, the smallest set of tokens with highest probabilities that add up to top_p or higher are kept for generation.
       temperature: Used to modulate logit distribution.
       max_num_rets: Maximum number of images to return in one generation pass.
+      max_img_per_ret: Maximum number of images to return for each [RET] token.
     Returns:
       return_outputs: List consisting of either str or List[PIL.Image.Image] objects, representing image-text interleaved model outputs.
     """
@@ -557,8 +558,8 @@ class Fromage(nn.Module):
         for seen_idx in seen_image_idx:
           scores[seen_idx, :] -= 1000
 
-        # Get the top 3 images for each image.
-        _, top_image_idx = scores.squeeze().topk(3)
+        # Get the top max_img_per_ret + 3 (in case some fail) images for each image.
+        _, top_image_idx = scores.squeeze().topk(max_img_per_ret + 3)
         image_outputs = []
         for img_idx in top_image_idx:
           # Find the first image that does not error out.
@@ -566,7 +567,8 @@ class Fromage(nn.Module):
             seen_image_idx.append(img_idx)
             img = utils.get_image_from_url(self.path_array[img_idx])
             image_outputs.append(img)
-            break
+            if len(image_outputs) == max_img_per_ret:
+              break
           except UnidentifiedImageError:
             pass
 
