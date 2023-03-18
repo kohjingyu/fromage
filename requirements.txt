@@ -33,4 +33,4 @@ tqdm==4.64.1
 transformers==4.21.3
 typing_extensions==4.4.0
 urllib3==1.26.14
-warmup-scheduler==0.3.2
+git+https://github.com/ildoonet/pytorch-gradual-warmup-lr.git
