@@ -2,6 +2,7 @@
 
 <p align="center">
 <img alt="FROMAGe chat animation" src="./teaser_gif.gif" width="40%">
+<br/><br/>
 <img alt="FROMAGe model architecture" src="./teaser.png" width="90%">
 </p>
 
