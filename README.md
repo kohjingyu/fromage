@@ -1,7 +1,10 @@
 # Grounding Language Models to Images for Multimodal Generation
 
-![FROMAGe model](./teaser.png)
-![FROMAGe chat animation](./teaser_gif.gif)
+<p align="center">
+  <img alt="FROMAGe chat animation" src="./teaser_gif.gif" width="30%">
+&nbsp; &nbsp; &nbsp; &nbsp;
+  <img alt="FROMAGe model architecture" src="./teaser.png" width="69%">
+</p>
 
 This repository hosts the code and model weights for FROMAGe.
 
