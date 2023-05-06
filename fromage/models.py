@@ -579,6 +579,50 @@ class Fromage(nn.Module):
 
     return return_outputs
 
+  def get_log_lik_scores(
+    self, prompts: List):
+    """
+    Output the log likelihoods of the given interleaved prompts.
+
+    Args:
+      prompts: List of interleaved PIL.Image.Image and strings representing input to the model.
+    Returns:
+      log lik score of prompt sequence.
+    """
+    input_embs = []
+    input_ids = []
+    add_bos = True
+
+    for i, p in enumerate(prompts):
+      if type(p) == Image.Image:
+        # Encode as image.
+        pixel_values = utils.get_pixel_values_for_model(self.model.feature_extractor, p)
+        pixel_values = pixel_values.to(device=self.model.logit_scale.device, dtype=self.model.logit_scale.dtype)
+        pixel_values = pixel_values[None, ...]
+
+        visual_embs = self.model.get_visual_embs(pixel_values, mode='captioning')  # (1, n_visual_tokens, D)
+        input_embs.append(visual_embs)
+        id_ = torch.zeros(visual_embs.shape[:2], dtype=torch.int64).to(visual_embs.device) - 100
+        input_ids.append(id_)
+      elif type(p) == str:
+        text_ids = self.model.tokenizer(p, add_special_tokens=True, return_tensors="pt").input_ids.to(self.model.logit_scale.device)
+        if not add_bos:
+          # Remove <bos> tag.
+          text_ids = text_ids[:, 1:]
+        else:
+          # Only add <bos> once.
+          add_bos = False
+
+        text_embs = self.model.input_embeddings(text_ids)  # (1, T, D)
+        input_embs.append(text_embs)
+        input_ids.append(text_ids)
+      else:
+        raise ValueError(f'Input prompts should be either PIL.Image.Image or str types, got {type(p)} instead.')
+    input_embs = torch.cat(input_embs, dim=1)
+    input_ids = torch.cat(input_ids, dim=1)
+
+    outputs = self.model.lm(inputs_embeds=input_embs, labels=input_ids, use_cache=False, output_hidden_states=True)
+    return -outputs.loss.item()  
 
 def load_fromage(model_dir: str) -> Fromage:
   model_args_path = os.path.join(model_dir, 'model_args.json')
