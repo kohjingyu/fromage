@@ -1,4 +1,4 @@
-# Grounding Language Models to Images for Multimodal Generation
+# Grounding Language Models to Images for Multimodal Inputs and Outputs
 
 <p align="center">
 <img alt="FROMAGe model architecture" src="./teaser.png" width="90%">
@@ -106,9 +106,9 @@ If you find this work useful, please consider citing:
 
 ```
 @inproceedings{koh2023grounding,
-  title={Grounding Language Models to Images for Multimodal Generation},
+  title={Grounding Language Models to Images for Multimodal Inputs and Outputs},
   author={Koh, Jing Yu and Salakhutdinov, Ruslan and Fried, Daniel},
-  journal={arXiv:2301.13823},
+  journal={ICML},
   year={2023}
 }
 ```
