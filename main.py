@@ -250,7 +250,7 @@ def main_worker(gpu, ngpus_per_node, args):
 
   model = models.Fromage(tokenizer, model_args)
   if args.precision == 'fp16':
-    model = model.float()
+    model = model.half()
   elif args.precision == 'bf16':
     model = model.bfloat16()
 
