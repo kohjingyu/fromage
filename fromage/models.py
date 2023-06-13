@@ -466,7 +466,7 @@ class Fromage(nn.Module):
 
   def generate_for_images_and_texts(
     self, prompts: List, num_words: int = 0, ret_scale_factor: float = 1.0, top_p: float = 1.0, temperature: float = 0.0,
-    max_num_rets: int = 1):
+    max_num_rets: int = 1, max_img_per_ret: int = 1):
     """
     Encode prompts into embeddings.
 
@@ -477,6 +477,7 @@ class Fromage(nn.Module):
       top_p: If set to < 1, the smallest set of tokens with highest probabilities that add up to top_p or higher are kept for generation.
       temperature: Used to modulate logit distribution.
       max_num_rets: Maximum number of images to return in one generation pass.
+      max_img_per_ret: Maximum number of images to return for each [RET] token.
     Returns:
       return_outputs: List consisting of either str or List[PIL.Image.Image] objects, representing image-text interleaved model outputs.
     """
@@ -557,8 +558,8 @@ class Fromage(nn.Module):
         for seen_idx in seen_image_idx:
           scores[seen_idx, :] -= 1000
 
-        # Get the top 3 images for each image.
-        _, top_image_idx = scores.squeeze().topk(3)
+        # Get the top max_img_per_ret + 3 (in case some fail) images for each image.
+        _, top_image_idx = scores.squeeze().topk(max_img_per_ret + 3)
         image_outputs = []
         for img_idx in top_image_idx:
           # Find the first image that does not error out.
@@ -566,7 +567,8 @@ class Fromage(nn.Module):
             seen_image_idx.append(img_idx)
             img = utils.get_image_from_url(self.path_array[img_idx])
             image_outputs.append(img)
-            break
+            if len(image_outputs) == max_img_per_ret:
+              break
           except UnidentifiedImageError:
             pass
 
@@ -577,6 +579,50 @@ class Fromage(nn.Module):
 
     return return_outputs
 
+  def get_log_lik_scores(
+    self, prompts: List):
+    """
+    Output the log likelihoods of the given interleaved prompts.
+
+    Args:
+      prompts: List of interleaved PIL.Image.Image and strings representing input to the model.
+    Returns:
+      log lik score of prompt sequence.
+    """
+    input_embs = []
+    input_ids = []
+    add_bos = True
+
+    for i, p in enumerate(prompts):
+      if type(p) == Image.Image:
+        # Encode as image.
+        pixel_values = utils.get_pixel_values_for_model(self.model.feature_extractor, p)
+        pixel_values = pixel_values.to(device=self.model.logit_scale.device, dtype=self.model.logit_scale.dtype)
+        pixel_values = pixel_values[None, ...]
+
+        visual_embs = self.model.get_visual_embs(pixel_values, mode='captioning')  # (1, n_visual_tokens, D)
+        input_embs.append(visual_embs)
+        id_ = torch.zeros(visual_embs.shape[:2], dtype=torch.int64).to(visual_embs.device) - 100
+        input_ids.append(id_)
+      elif type(p) == str:
+        text_ids = self.model.tokenizer(p, add_special_tokens=True, return_tensors="pt").input_ids.to(self.model.logit_scale.device)
+        if not add_bos:
+          # Remove <bos> tag.
+          text_ids = text_ids[:, 1:]
+        else:
+          # Only add <bos> once.
+          add_bos = False
+
+        text_embs = self.model.input_embeddings(text_ids)  # (1, T, D)
+        input_embs.append(text_embs)
+        input_ids.append(text_ids)
+      else:
+        raise ValueError(f'Input prompts should be either PIL.Image.Image or str types, got {type(p)} instead.')
+    input_embs = torch.cat(input_embs, dim=1)
+    input_ids = torch.cat(input_ids, dim=1)
+
+    outputs = self.model.lm(inputs_embeds=input_embs, labels=input_ids, use_cache=False, output_hidden_states=True)
+    return -outputs.loss.item()  
 
 def load_fromage(model_dir: str) -> Fromage:
   model_args_path = os.path.join(model_dir, 'model_args.json')

@@ -1,6 +1,10 @@
-# Grounding Language Models to Images for Multimodal Generation
+# Grounding Language Models to Images for Multimodal Inputs and Outputs
 
-![FROMAGe model](./teaser.png)
+<p align="center">
+<img alt="FROMAGe model architecture" src="./teaser.png" width="90%">
+<br/><br/>
+<img alt="FROMAGe chat animation" src="./teaser_gif.gif" width="40%">
+</p>
 
 This repository hosts the code and model weights for FROMAGe.
 
@@ -59,14 +63,17 @@ The corresponding image files should be saved in the `data/` directory. The dire
 After preparing CC3M as detailed above, you can start a new training job with the following command line flag:
 
 ```
+randport=$(shuf -i8000-9999 -n1)  # Generate a random port number
 python -u main.py \
+    --dist-url "tcp://127.0.0.1:${randport}" --dist-backend 'nccl' \
+    --multiprocessing-distributed --world-size 1 --rank 0 \
     --dataset=cc3m  --val-dataset=cc3m \
     --opt-version='facebook/opt-6.7b' --visual-model='openai/clip-vit-large-patch14' \
     --exp_name='fromage_exp' --image-dir='data/'  --log-base-dir='runs/' \
     --batch-size=180  --val-batch-size=100  --learning-rate=0.0003 --precision='bf16'  --print-freq=100
 ```
 
-On a single A6000 GPU, the model converges within 24 hours (with a batch size of 180). For GPUs with smaller memory available, you might need to reduce the batch size, enable gradient accumulation, or adjust hyperparameters to get good performance.
+On a single A6000 GPU, the model converges within 24 hours (with a batch size of 180). For GPUs with smaller memory available, you might need to reduce the batch size, enable gradient accumulation, or adjust hyperparameters to get good performance. You may also have to disable NCCL P2P with `export NCCL_P2P_DISABLE=1` if you run into issues.
 
 
 ### Unit Tests
@@ -103,9 +110,9 @@ If you find this work useful, please consider citing:
 
 ```
 @inproceedings{koh2023grounding,
-  title={Grounding Language Models to Images for Multimodal Generation},
+  title={Grounding Language Models to Images for Multimodal Inputs and Outputs},
   author={Koh, Jing Yu and Salakhutdinov, Ruslan and Fried, Daniel},
-  journal={arXiv:2301.13823},
+  journal={ICML},
   year={2023}
 }
 ```
