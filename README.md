@@ -76,6 +76,11 @@ python -u main.py \
 On a single A6000 GPU, the model converges within 24 hours (with a batch size of 180). For GPUs with smaller memory available, you might need to reduce the batch size, enable gradient accumulation, or adjust hyperparameters to get good performance. You may also have to disable NCCL P2P with `export NCCL_P2P_DISABLE=1` if you run into issues.
 
 
+### Pruning Model Weights
+
+As FROMAGe only consists of a few pretrained linear layers and the `[RET]` embedding, we can discard most of the pretrained weights to save on disk space. If you have trained a new model, and wish to do so, you can use `fromage/prune_model_ckpt.py` to prune the model weights. We used the same script to create the weights in the `fromage_model` directory.
+
+
 ### Unit Tests
 
 You can also test that the code runs locally by running the unit test with `pytest -x`. This runs a short training and evaluation job, with smaller models, to ensure the code works. The test should complete within approximately 90s.
