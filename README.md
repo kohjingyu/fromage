@@ -92,6 +92,10 @@ Note that because of exception catching (to ensure data errors don't terminate t
 
 We provide an evaluation script to reproduce our results on contextual image retrieval on Visual Storytelling (results of Table 1 of our paper). The script can be run from `evals/eval_vist_retrieval.py`. There is also a iPython notebook version (`VIST_Contextual_Image_Retrieval.ipynb`) in the same directory.
 
+Similarly, we provide scripts to reproduce the text generation and image retrieval results on VisDial (presented in Table 2 of our paper). The script for VisDial text generation can be run from `evals/eval_visdial_generation.py` (or through the notebook version, `VisDial_Inference_IT2T_Generation.ipynb`). This reports the NDCG, MRR, and R@k scores for VisDial.
+
+The results for image retrieval can be reproduced by running the `evals/eval_visdial_retrieval.py` script (or through the notebook version `VisDial_Inference_T2I_Retrieval.ipynb`), which reports R@k scores.
+
 
 ## Gradio Demo
 
@@ -99,14 +103,6 @@ You can launch your own version of the Gradio demo locally by running `python de
 
 Check out other unofficial HuggingFace spaces for FROMAGe:
 - [alvanlii FROMAGe demo](https://huggingface.co/spaces/alvanlii/FROMAGe)
-
-
-## TODOs
-
-- [ ] Implement [LLM.int8()](https://arxiv.org/abs/2208.07339) for inference with lower memory GPUs.
-- [x] Add training code and instructions for training a new model on CC3M.
-- [x] Add [web demo](https://huggingface.co/spaces/jykoh/fromage).
-
 
 
 ## Citation
