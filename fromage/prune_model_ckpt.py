@@ -25,7 +25,7 @@ if __name__ == '__main__':
         checkpoint['state_dict'][k] = v.detach().clone()
 
     # Prune the pretrained token embeddings and keep just [RET].
-    ret_embedding = checkpoint['state_dict']['module.model.input_embeddings.weight'][ret_token_idx:ret_token_idx+1, :].detach().clone()
+    ret_embedding = checkpoint['state_dict']['module.model.input_embeddings.weight'][ret_token_idx, :].detach().clone()
     checkpoint['state_dict']['ret_input_embeddings.weight'] = ret_embedding
 
     with open(pruned_output_path, 'wb') as f:
