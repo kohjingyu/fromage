@@ -41,7 +41,7 @@ def get_pixel_values_from_path(path: str, feature_extractor):
 
 if __name__ == "__main__":
     # Load model used in the paper.
-    model_dir = './fromage_model/'
+    model_dir = './' #'./fromage_model/'
     model = models.load_fromage(model_dir)
 
 
@@ -50,7 +50,7 @@ if __name__ == "__main__":
     # (for computing MRR) and the images (https://www.dropbox.com/s/twmtutniktom7tu/VisualDialog_val2018.zip?dl=0).
     # Extract everything to the `VisualDialog` folder.
 
-    base_dir = 'VisualDialog/'
+    base_dir = '/projects/tir6/general/jingyuk/VisualDialog'
     split = 'val'
     img_dir = os.path.join(base_dir, f'VisualDialog_{split}2018')
 
