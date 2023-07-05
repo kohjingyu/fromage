@@ -262,7 +262,7 @@ if __name__ == "__main__":
                 padded_example_labels = torch.cat(padded_example_labels, axis=0)
 
                 all_logits = []
-                batches = int(padded_example_embs.shape[0] // batch_size)
+                batches = int(np.ceil(padded_example_embs.shape[0] / batch_size))
                 for i in range(batches):
                     start_idx = i * batch_size
                     end_idx = start_idx + batch_size
