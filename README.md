@@ -36,6 +36,10 @@ We have also included a second model trained with a stronger visual linear layer
 
 The visual embeddings for Conceptual Captions images with valid URLs are precomputed and stored at this [URL](https://drive.google.com/file/d/1wMojZNqEwApNlsCZVvSgQVtZLgbeLoKi/view?usp=share_link). These are used to enable the model to retrieve images. The embeddings take up around 3GB, and are compatible with both model configs we provide. Download the files and place `cc3m_embeddings.pkl` into the `fromage_model/` directory.
 
+If you wish to precompute these embeddings for a different set of image URLs or for a different model, edit `fromage/extract_img_embs.py` with the list of image URLs and run it:
+
+```python fromage/extract_img_embs.py```
+
 
 ## Inference
 
