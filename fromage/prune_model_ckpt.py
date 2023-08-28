@@ -4,6 +4,7 @@ This keeps only the weights that we finetune, and discards the pretrained LLM / 
 """
 import torch
 import json
+from collections import OrderedDict
 
 ckpt_path = 'ckpt.pth.tar'
 pruned_output_path = 'ckpt_pruned.pth.tar'
@@ -17,16 +18,22 @@ if __name__ == '__main__':
     with open(ckpt_path, 'rb') as f:
         checkpoint = torch.load(f)
 
+    stripped_state_dict = {
+        k.replace('module.', ''): v for k, v in checkpoint['state_dict'].items() if 
+        ('.lm' not in k and '.visual_model' not in k)
+    }
+    stripped_state_dict = OrderedDict(sorted(stripped_state_dict.items()))
+
     del checkpoint['epoch']
-    del checkpoint['best_acc1']
+    print('Best score:', checkpoint['best_score'])
     del checkpoint['optimizer']
     del checkpoint['scheduler']
-    for k, v in checkpoint['state_dict'].items():
-        checkpoint['state_dict'][k] = v.detach().clone()
+    for k, v in stripped_state_dict.items():
+        stripped_state_dict[k] = v.detach().clone()
 
     # Prune the pretrained token embeddings and keep just [RET].
-    ret_embedding = checkpoint['state_dict']['module.model.input_embeddings.weight'][ret_token_idx, :].detach().clone()
-    checkpoint['state_dict']['ret_input_embeddings.weight'] = ret_embedding
+    ret_embedding = stripped_state_dict['model.input_embeddings.weight'][ret_token_idx:ret_token_idx+1, :].detach().clone()
+    stripped_state_dict['ret_input_embeddings.weight'] = ret_embedding
 
     with open(pruned_output_path, 'wb') as f:
-        torch.save(checkpoint, f)
+        torch.save({'state_dict': stripped_state_dict}, f)

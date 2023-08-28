@@ -676,7 +676,7 @@ def load_fromage(model_dir: str) -> Fromage:
   checkpoint = torch.load(model_ckpt_path)
   model.load_state_dict(checkpoint['state_dict'], strict=False)
   with torch.no_grad():
-      model.model.input_embeddings.weight[model.model.retrieval_token_idx, :].copy_(checkpoint['state_dict']['ret_input_embeddings.weight'].cpu().detach())
+      model.model.input_embeddings.weight[model.model.retrieval_token_idx, :].copy_(checkpoint['state_dict']['ret_input_embeddings.weight'].squeeze().cpu().detach())
 
   logit_scale = model.model.logit_scale.exp()
   emb_matrix = torch.tensor(emb_matrix, dtype=logit_scale.dtype).to(logit_scale.device)
