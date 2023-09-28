@@ -319,7 +319,7 @@ def main_worker(gpu, ngpus_per_node, args):
         loc = 'cuda:{}'.format(args.gpu)
         checkpoint = torch.load(args.resume, map_location=loc)
       args.start_epoch = checkpoint['epoch']
-      best_score = checkpoint['best_score']
+      best_score = checkpoint.get('best_score', 0)
       if args.gpu is not None:
         # best_score may be from a checkpoint from a different GPU
         best_score = best_score.to(args.gpu)
