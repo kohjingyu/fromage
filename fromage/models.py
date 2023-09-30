@@ -66,6 +66,8 @@ class FromageModel(nn.Module):
     else:
       self.lm.train()
 
+    # NOTE: Resizing sets all token embeddings and all lm_head weights (since they are tied in OPT)
+    # to be trainable (param.requires_grad = True).
     self.retrieval_token_idx = args.retrieval_token_idx
     print(f'Initializing embedding for the retrieval token [RET] (id = {self.retrieval_token_idx}).')
     self.lm.resize_token_embeddings(len(tokenizer))
