@@ -13,7 +13,7 @@ from io import BytesIO
 import pickle as pkl
 
 
-def extract_embeddings_for_urls(image_urls: str, emb_output_path: str, device: str = "cuda"):
+def extract_embeddings_for_urls(image_urls: list[str], emb_output_path: str, device: str = "cuda"):
     # Load model checkpoint.
     model = models.load_fromage("./fromage_model/")
     model.eval()
@@ -25,7 +25,7 @@ def extract_embeddings_for_urls(image_urls: str, emb_output_path: str, device: s
 
     output_data = {"paths": [], "embeddings": []}
     with torch.no_grad():
-        for img_url in os.listdir(image_urls):
+        for img_url in image_urls:
             img = Image.open(BytesIO(requests.get(img_url).content))
 
             img_tensor = utils.get_pixel_values_for_model(feature_extractor, img)
